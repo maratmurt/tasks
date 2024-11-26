@@ -1,7 +1,6 @@
 package ru.skillbox.tasks.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,8 +61,9 @@ public class TaskController {
         return ResponseEntity.ok(taskService.addComment(taskId, user.getUsername(), commentDto));
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Task> changeStatus(@PathVariable("id") Long taskId, @RequestParam String status) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<Task> changeStatus(@PathVariable("id") Long taskId,
+                                             @RequestParam String status) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(taskService.changeStatus(taskId, user.getUsername(), Status.valueOf(status)));
     }
