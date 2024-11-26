@@ -1,12 +1,16 @@
 package ru.skillbox.tasks.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.skillbox.tasks.domain.dto.CommentDto;
 import ru.skillbox.tasks.domain.dto.TaskDto;
+import ru.skillbox.tasks.domain.dto.TaskFilter;
 import ru.skillbox.tasks.domain.model.*;
 import ru.skillbox.tasks.repository.CommentRepository;
 import ru.skillbox.tasks.repository.TaskRepository;
+import ru.skillbox.tasks.repository.TaskSpecification;
 import ru.skillbox.tasks.repository.UserRepository;
 
 import java.util.List;
@@ -21,8 +25,13 @@ public class TaskService {
 
     private final UserRepository userRepository;
 
-    public List<Task> getAll() {
-        return taskRepository.findAll();
+    public List<Task> getAll(Integer page, Integer size, TaskFilter filter) {
+        Specification<Task> specification = null;
+        if (filter != null) {
+            specification = TaskSpecification.byCreatorId(filter.creatorId())
+                    .and(TaskSpecification.byAssigneeId(filter.assigneeId()));
+        }
+        return taskRepository.findAll(specification, PageRequest.of(page, size)).toList();
     }
 
     public Task getById(Long id) {

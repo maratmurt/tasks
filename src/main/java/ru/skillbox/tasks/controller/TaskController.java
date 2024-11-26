@@ -1,12 +1,14 @@
 package ru.skillbox.tasks.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.tasks.domain.dto.CommentDto;
 import ru.skillbox.tasks.domain.dto.TaskDto;
+import ru.skillbox.tasks.domain.dto.TaskFilter;
 import ru.skillbox.tasks.domain.model.Status;
 import ru.skillbox.tasks.domain.model.Task;
 import ru.skillbox.tasks.domain.model.User;
@@ -22,8 +24,10 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAll() {
-        return ResponseEntity.ok(taskService.getAll());
+    public ResponseEntity<List<Task>> getAll(@RequestParam Integer page,
+                                             @RequestParam Integer size,
+                                             @RequestBody(required = false) TaskFilter filter) {
+        return ResponseEntity.ok(taskService.getAll(page, size, filter));
     }
 
     @GetMapping("/{id}")
