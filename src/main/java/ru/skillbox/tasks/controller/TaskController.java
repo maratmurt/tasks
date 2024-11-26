@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.tasks.domain.dto.CommentDto;
 import ru.skillbox.tasks.domain.dto.TaskDto;
+import ru.skillbox.tasks.domain.model.Status;
 import ru.skillbox.tasks.domain.model.Task;
 import ru.skillbox.tasks.domain.model.User;
 import ru.skillbox.tasks.service.TaskService;
@@ -55,6 +56,12 @@ public class TaskController {
                                            @RequestBody CommentDto commentDto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(taskService.addComment(taskId, user.getUsername(), commentDto));
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Task> changeStatus(@PathVariable("id") Long taskId, @RequestParam String status) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(taskService.changeStatus(taskId, user.getUsername(), Status.valueOf(status)));
     }
 
 }

@@ -44,10 +44,12 @@ public class TaskService {
 
     public Task update(Long taskId, TaskDto taskDto) {
         Task task = taskRepository.findById(taskId).orElseThrow();
+        User assignee = userRepository.findById(taskDto.assigneeId()).orElseThrow();
         task.setTitle(taskDto.title());
         task.setDescription(taskDto.description());
         task.setStatus(Status.valueOf(taskDto.status()));
         task.setPriority(Priority.valueOf(taskDto.priority()));
+        task.setAssignee(assignee);
         return taskRepository.save(task);
     }
 
@@ -67,4 +69,14 @@ public class TaskService {
         return task;
     }
 
+    public Task changeStatus(Long taskId, String username, Status status) {
+        Task task = taskRepository.findById(taskId).orElseThrow();
+        User user = userRepository.findByEmail(username).orElseThrow();
+        if (user.getRole().equals(Role.ROLE_ADMIN) || task.getAssignee().equals(user)) {
+            task.setStatus(status);
+        } else {
+            throw new RuntimeException();
+        }
+        return taskRepository.save(task);
+    }
 }
