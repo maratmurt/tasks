@@ -60,6 +60,9 @@ public class TaskService {
     public Task addComment(Long taskId, String username, CommentDto commentDto) {
         Task task = taskRepository.findById(taskId).orElseThrow();
         User user = userRepository.findByEmail(username).orElseThrow();
+        if (!user.getRole().equals(Role.ROLE_ADMIN) && !task.getAssignee().equals(user)) {
+            throw new SecurityException();
+        }
         Comment comment = new Comment();
         comment.setTask(task);
         comment.setUser(user);
@@ -72,11 +75,10 @@ public class TaskService {
     public Task changeStatus(Long taskId, String username, Status status) {
         Task task = taskRepository.findById(taskId).orElseThrow();
         User user = userRepository.findByEmail(username).orElseThrow();
-        if (user.getRole().equals(Role.ROLE_ADMIN) || task.getAssignee().equals(user)) {
-            task.setStatus(status);
-        } else {
-            throw new RuntimeException();
+        if (!user.getRole().equals(Role.ROLE_ADMIN) && !task.getAssignee().equals(user)) {
+            throw new SecurityException();
         }
+        task.setStatus(status);
         return taskRepository.save(task);
     }
 }
