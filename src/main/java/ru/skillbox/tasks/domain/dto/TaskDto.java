@@ -1,4 +1,4 @@
-package ru.skillbox.tasks.dto;
+package ru.skillbox.tasks.domain.dto;
 
 public record TaskDto(
         String title,

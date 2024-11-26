@@ -2,10 +2,13 @@ package ru.skillbox.tasks.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.tasks.dto.CommentDto;
-import ru.skillbox.tasks.dto.TaskDto;
-import ru.skillbox.tasks.model.Task;
+import ru.skillbox.tasks.domain.dto.CommentDto;
+import ru.skillbox.tasks.domain.dto.TaskDto;
+import ru.skillbox.tasks.domain.model.Task;
+import ru.skillbox.tasks.domain.model.User;
 import ru.skillbox.tasks.service.TaskService;
 
 import java.util.List;
@@ -28,9 +31,10 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> create(@RequestBody TaskDto taskDto,
-                                       @RequestHeader("Username") String username) {
-        return ResponseEntity.ok(taskService.create(taskDto, username));
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Task> create(@RequestBody TaskDto taskDto) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(taskService.create(taskDto, user.getUsername()));
     }
 
     @PutMapping("/{id}")
@@ -40,6 +44,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         taskService.delete(id);
         return ResponseEntity.noContent().build();
@@ -47,9 +52,9 @@ public class TaskController {
 
     @PostMapping("/{id}/comment")
     public ResponseEntity<Task> addComment(@PathVariable("id") Long taskId,
-                                           @RequestHeader("Username") String username,
                                            @RequestBody CommentDto commentDto) {
-        return ResponseEntity.ok(taskService.addComment(taskId, username, commentDto));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(taskService.addComment(taskId, user.getUsername(), commentDto));
     }
 
 }

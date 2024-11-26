@@ -1,8 +1,9 @@
 package ru.skillbox.tasks.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import ru.skillbox.tasks.model.User;
+import ru.skillbox.tasks.domain.model.User;
 import ru.skillbox.tasks.repository.UserRepository;
 
 @Service
@@ -15,4 +16,11 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow();
     }
 
+    public UserDetailsService userDetailsService() {
+        return this::getByEmail;
+    }
+
+    public User create(User user) {
+        return userRepository.save(user);
+    }
 }

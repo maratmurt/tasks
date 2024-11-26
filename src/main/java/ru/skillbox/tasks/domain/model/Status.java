@@ -1,4 +1,4 @@
-package ru.skillbox.tasks.model;
+package ru.skillbox.tasks.domain.model;
 
 public enum Status {
     PENDING, ONGOING, DONE

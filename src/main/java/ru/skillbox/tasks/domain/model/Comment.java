@@ -1,12 +1,18 @@
-package ru.skillbox.tasks.model;
+package ru.skillbox.tasks.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Table(name = "comment")
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIncludeProperties({"id", "username", "text"})
 public class Comment {
 
     @Id
@@ -17,14 +23,17 @@ public class Comment {
     @Column(name = "text")
     private String text;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
+
+    @JsonProperty("username")
+    public String getUsername() {
+        return user.getUsername();
+    }
 
 }

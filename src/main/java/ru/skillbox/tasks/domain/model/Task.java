@@ -1,15 +1,18 @@
-package ru.skillbox.tasks.model;
+package ru.skillbox.tasks.domain.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import ru.skillbox.tasks.dto.TaskDto;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "task")
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
     @Id

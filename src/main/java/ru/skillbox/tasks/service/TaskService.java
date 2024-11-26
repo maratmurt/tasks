@@ -2,9 +2,9 @@ package ru.skillbox.tasks.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.skillbox.tasks.dto.CommentDto;
-import ru.skillbox.tasks.dto.TaskDto;
-import ru.skillbox.tasks.model.*;
+import ru.skillbox.tasks.domain.dto.CommentDto;
+import ru.skillbox.tasks.domain.dto.TaskDto;
+import ru.skillbox.tasks.domain.model.*;
 import ru.skillbox.tasks.repository.CommentRepository;
 import ru.skillbox.tasks.repository.TaskRepository;
 import ru.skillbox.tasks.repository.UserRepository;
