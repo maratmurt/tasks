@@ -8,6 +8,7 @@ import ru.skillbox.tasks.domain.dto.CommentDto;
 import ru.skillbox.tasks.domain.dto.TaskDto;
 import ru.skillbox.tasks.domain.dto.TaskFilter;
 import ru.skillbox.tasks.domain.model.*;
+import ru.skillbox.tasks.exception.TaskUpdateSecurityException;
 import ru.skillbox.tasks.repository.CommentRepository;
 import ru.skillbox.tasks.repository.TaskRepository;
 import ru.skillbox.tasks.repository.TaskSpecification;
@@ -70,22 +71,23 @@ public class TaskService {
         Task task = taskRepository.findById(taskId).orElseThrow();
         User user = userRepository.findByEmail(username).orElseThrow();
         if (!user.getRole().equals(Role.ROLE_ADMIN) && !task.getAssignee().equals(user)) {
-            throw new SecurityException();
+            throw new TaskUpdateSecurityException("Комментарии доступны только администратору и исполнителю!");
         }
-        Comment comment = new Comment();
-        comment.setTask(task);
-        comment.setUser(user);
-        comment.setText(commentDto.text());
+        Comment comment = Comment.builder()
+                .task(task)
+                .user(user)
+                .text(commentDto.text())
+                .build();
         commentRepository.save(comment);
         task.getComments().add(comment);
         return task;
     }
 
-    public Task changeStatus(Long taskId, String username, Status status) {
+    public Task setStatus(Long taskId, String username, Status status) {
         Task task = taskRepository.findById(taskId).orElseThrow();
         User user = userRepository.findByEmail(username).orElseThrow();
         if (!user.getRole().equals(Role.ROLE_ADMIN) && !task.getAssignee().equals(user)) {
-            throw new SecurityException();
+            throw new TaskUpdateSecurityException("Изменение статуса доступно только администратору и исполнителю!");
         }
         task.setStatus(status);
         return taskRepository.save(task);

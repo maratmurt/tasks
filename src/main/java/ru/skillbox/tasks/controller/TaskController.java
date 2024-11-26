@@ -23,8 +23,8 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAll(@RequestParam Integer page,
-                                             @RequestParam Integer size,
+    public ResponseEntity<List<Task>> getAll(@RequestParam(defaultValue = "0") Integer page,
+                                             @RequestParam(defaultValue = "10") Integer size,
                                              @RequestBody(required = false) TaskFilter filter) {
         return ResponseEntity.ok(taskService.getAll(page, size, filter));
     }
@@ -42,6 +42,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Task> update(@PathVariable("id") Long id,
                                        @RequestBody TaskDto taskDto) {
         return ResponseEntity.ok(taskService.update(id, taskDto));
@@ -62,10 +63,10 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Task> changeStatus(@PathVariable("id") Long taskId,
-                                             @RequestParam String status) {
+    public ResponseEntity<Task> setStatus(@PathVariable("id") Long taskId,
+                                          @RequestParam String status) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok(taskService.changeStatus(taskId, user.getUsername(), Status.valueOf(status)));
+        return ResponseEntity.ok(taskService.setStatus(taskId, user.getUsername(), Status.valueOf(status)));
     }
 
 }
