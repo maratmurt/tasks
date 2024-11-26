@@ -21,8 +21,8 @@ public class AuthenticationService {
     public JwtDto signUp(UserDto request) {
 
         var user = User.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .build();
 
@@ -34,13 +34,13 @@ public class AuthenticationService {
 
     public JwtDto signIn(UserDto request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.email(),
-                request.password()
+                request.getEmail(),
+                request.getPassword()
         ));
 
         var user = userService
                 .userDetailsService()
-                .loadUserByUsername(request.email());
+                .loadUserByUsername(request.getEmail());
 
         var jwt = jwtService.generateToken(user);
         return new JwtDto(jwt);

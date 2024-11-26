@@ -20,15 +20,15 @@ public class Comment {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "text")
+    @Column(name = "text", nullable = false)
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "task_id")
+    @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
     @JsonProperty("username")

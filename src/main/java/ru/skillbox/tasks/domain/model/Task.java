@@ -20,22 +20,22 @@ public class Task {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false, unique = true, length = 50)
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private Status status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "priority")
+    @Column(name = "priority", nullable = false)
     private Priority priority;
 
     @ManyToOne
-    @JoinColumn(name = "creator_id")
+    @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
     @ManyToOne

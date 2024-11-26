@@ -1,5 +1,6 @@
 package ru.skillbox.tasks.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,7 +37,7 @@ public class TaskController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Task> create(@RequestBody TaskDto taskDto) {
+    public ResponseEntity<Task> create(@RequestBody @Valid TaskDto taskDto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(taskService.create(taskDto, user.getUsername()));
     }
@@ -44,7 +45,7 @@ public class TaskController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Task> update(@PathVariable("id") Long id,
-                                       @RequestBody TaskDto taskDto) {
+                                       @RequestBody @Valid TaskDto taskDto) {
         return ResponseEntity.ok(taskService.update(id, taskDto));
     }
 
@@ -57,7 +58,7 @@ public class TaskController {
 
     @PostMapping("/{id}/comment")
     public ResponseEntity<Task> addComment(@PathVariable("id") Long taskId,
-                                           @RequestBody CommentDto commentDto) {
+                                           @RequestBody @Valid CommentDto commentDto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(taskService.addComment(taskId, user.getUsername(), commentDto));
     }

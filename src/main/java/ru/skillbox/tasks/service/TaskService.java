@@ -9,6 +9,7 @@ import ru.skillbox.tasks.domain.dto.TaskDto;
 import ru.skillbox.tasks.domain.dto.TaskFilter;
 import ru.skillbox.tasks.domain.model.*;
 import ru.skillbox.tasks.exception.TaskUpdateSecurityException;
+import ru.skillbox.tasks.exception.EntityNotFoundException;
 import ru.skillbox.tasks.repository.CommentRepository;
 import ru.skillbox.tasks.repository.TaskRepository;
 import ru.skillbox.tasks.repository.TaskSpecification;
@@ -40,25 +41,34 @@ public class TaskService {
     }
 
     public Task create(TaskDto taskDto, String username) {
-        User creator = userRepository.findByEmail(username).orElseThrow();
-        User assignee = userRepository.findById(taskDto.assigneeId()).orElseThrow();
-        Task task = new Task();
-        task.setTitle(taskDto.title());
-        task.setDescription(taskDto.description());
-        task.setStatus(Status.valueOf(taskDto.status()));
-        task.setPriority(Priority.valueOf(taskDto.priority()));
-        task.setAssignee(assignee);
-        task.setCreator(creator);
+        User creator = userRepository.findByEmail(username)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Пользователь с email %s не найден", username)));
+        User assignee = userRepository.findById(taskDto.getAssigneeId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Пользователь с ID %s не найден", taskDto.getAssigneeId())));
+        Task task = Task.builder()
+                .title(taskDto.getTitle())
+                .description(taskDto.getDescription())
+                .status(Status.valueOf(taskDto.getStatus()))
+                .priority(Priority.valueOf(taskDto.getPriority()))
+                .assignee(assignee)
+                .creator(creator)
+                .build();
         return taskRepository.save(task);
     }
 
     public Task update(Long taskId, TaskDto taskDto) {
-        Task task = taskRepository.findById(taskId).orElseThrow();
-        User assignee = userRepository.findById(taskDto.assigneeId()).orElseThrow();
-        task.setTitle(taskDto.title());
-        task.setDescription(taskDto.description());
-        task.setStatus(Status.valueOf(taskDto.status()));
-        task.setPriority(Priority.valueOf(taskDto.priority()));
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Задача с ID %s не найдена", taskDto.getAssigneeId())));
+        User assignee = userRepository.findById(taskDto.getAssigneeId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Пользователь с ID %s не найден", taskDto.getAssigneeId())));
+        task.setTitle(taskDto.getTitle());
+        task.setDescription(taskDto.getDescription());
+        task.setStatus(Status.valueOf(taskDto.getStatus()));
+        task.setPriority(Priority.valueOf(taskDto.getPriority()));
         task.setAssignee(assignee);
         return taskRepository.save(task);
     }
@@ -68,15 +78,19 @@ public class TaskService {
     }
 
     public Task addComment(Long taskId, String username, CommentDto commentDto) {
-        Task task = taskRepository.findById(taskId).orElseThrow();
-        User user = userRepository.findByEmail(username).orElseThrow();
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Задача с ID %s не найдена", taskId)));
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Пользователь с email %s не найден", username)));
         if (!user.getRole().equals(Role.ROLE_ADMIN) && !task.getAssignee().equals(user)) {
             throw new TaskUpdateSecurityException("Комментарии доступны только администратору и исполнителю!");
         }
         Comment comment = Comment.builder()
                 .task(task)
                 .user(user)
-                .text(commentDto.text())
+                .text(commentDto.getText())
                 .build();
         commentRepository.save(comment);
         task.getComments().add(comment);
@@ -84,8 +98,12 @@ public class TaskService {
     }
 
     public Task setStatus(Long taskId, String username, Status status) {
-        Task task = taskRepository.findById(taskId).orElseThrow();
-        User user = userRepository.findByEmail(username).orElseThrow();
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Задача с ID %s не найдена", taskId)));
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Пользователь с email %s не найден", username)));
         if (!user.getRole().equals(Role.ROLE_ADMIN) && !task.getAssignee().equals(user)) {
             throw new TaskUpdateSecurityException("Изменение статуса доступно только администратору и исполнителю!");
         }
