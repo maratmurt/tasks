@@ -27,6 +27,11 @@ public class TaskService {
 
     private final UserRepository userRepository;
 
+    /**
+     * Вывод списка задач с фильтрацией и пагинацией
+     *
+     * @return список задач
+     */
     public List<Task> getAll(Integer page, Integer size, TaskFilter filter) {
         Specification<Task> specification = null;
         if (filter != null) {
@@ -36,10 +41,20 @@ public class TaskService {
         return taskRepository.findAll(specification, PageRequest.of(page, size)).toList();
     }
 
+    /**
+     * Получение задачи по ID
+     *
+     * @return задача
+     */
     public Task getById(Long id) {
         return taskRepository.findById(id).orElseThrow();
     }
 
+    /**
+     * Создание новой задачи
+     *
+     * @return новая задача
+     */
     public Task create(TaskDto taskDto, String username) {
         User creator = userRepository.findByEmail(username)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -58,6 +73,11 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    /**
+     * Обновление задачи
+     *
+     * @return обновлённая задача
+     */
     public Task update(Long taskId, TaskDto taskDto) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -73,10 +93,18 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    /**
+     * Удаление задачи по ID
+     */
     public void delete(Long id) {
         taskRepository.deleteById(id);
     }
 
+    /**
+     * Добавление комментария к задаче
+     *
+     * @return задача с новым комментарием
+     */
     public Task addComment(Long taskId, String username, CommentDto commentDto) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -97,6 +125,11 @@ public class TaskService {
         return task;
     }
 
+    /**
+     * Обновление статуса задачи
+     *
+     * @return обновлённая задача
+     */
     public Task setStatus(Long taskId, String username, Status status) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException(
