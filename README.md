@@ -12,6 +12,6 @@ docker-compose up
 ```shell
 ./mvnw spring-boot:run
 ```
-Для ручных тестов в базе сохранён пользователь `admin@mail.ru` с паролем `admin`.
+Для ручных тестов в базе сохранён пользователь `admin@mail.ru` с паролем `88888888`.
 
 Swagger: http://localhost:8080/swagger-ui/index.html
